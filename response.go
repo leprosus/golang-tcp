@@ -13,8 +13,20 @@ type Error struct {
 	Text string `json:"err"`
 }
 
+type Status struct {
+	Status string `json:"status"`
+}
+
 func (res *Response) SendError(text string) (err error) {
 	return res.SendJson(Error{Text: text})
+}
+
+func (res *Response) SendStatus(isWork bool) (err error) {
+	if isWork {
+		err = res.SendJson(Status{Status: "ok"})
+	}
+
+	return
 }
 
 func (res *Response) SendJson(object interface{}) (err error) {
