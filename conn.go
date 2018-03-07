@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"time"
 	"sync"
+	"bufio"
 )
 
 const (
@@ -21,6 +22,8 @@ type TCP struct {
 }
 
 func Lister(host string, port uint) (tcp *TCP, err error) {
+	tcp = &TCP{}
+
 	address := fmt.Sprintf("%s:%d", host, port)
 	tcp.listener, err = net.Listen("tcp", address)
 
@@ -54,8 +57,10 @@ func (tcp *TCP) Close() {
 }
 
 func (tcp *TCP) Handle(handler func(req *Request, res *Response)) (err error) {
+	var conn net.Conn
+
 	for {
-		conn, err := tcp.listener.Accept()
+		conn, err = tcp.listener.Accept()
 		if err != nil {
 			return
 		}
@@ -63,13 +68,21 @@ func (tcp *TCP) Handle(handler func(req *Request, res *Response)) (err error) {
 		go func(conn net.Conn) {
 			defer conn.Close()
 
-			buf := make([]byte, tcp.limit+1)
+			var (
+				buf     []byte
+				hasMore bool
+				req     = &Request{}
+				res     = &Response{conn: conn}
+			)
 
-			req := &Request{}
-			res := &Response{conn: conn}
+			reader := bufio.NewReaderSize(conn, int(tcp.limit))
+			buf, hasMore, err = reader.ReadLine()
 
-			n, err := conn.Read(buf)
-			if n > int(tcp.limit) || err != nil {
+			if err != nil {
+				res.SendError(fmt.Sprintf("Errror during request reading: %s", err.Error()))
+
+				return
+			} else if hasMore {
 				res.SendError(fmt.Sprintf("Request is more that %d bytes", tcp.limit))
 
 				return
