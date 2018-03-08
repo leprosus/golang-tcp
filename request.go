@@ -35,7 +35,7 @@ func (req *Request) Version() (ver Version, err error) {
 
 	slices := strings.Split(version.Version, ".")
 	if len(slices) != 2 {
-		return ver, fmt.Errorf("bad version format; user major.minor pattern")
+		return ver, fmt.Errorf("bad version format; user `major.minor` pattern")
 	}
 
 	val, err := strconv.ParseUint(slices[0], 10, 64)
@@ -51,6 +51,27 @@ func (req *Request) Version() (ver Version, err error) {
 	}
 
 	ver.Minor = uint(val)
+
+	return
+}
+
+func (req *Request) Command() (com Command, err error) {
+	command := struct {
+		Command string `json:"com"`
+	}{}
+
+	err = req.Read(&command)
+	if err != nil {
+		return
+	}
+
+	slices := strings.Split(command.Command, "/")
+	if len(slices) != 2 {
+		return com, fmt.Errorf("bad command format; user `object/action` pattern")
+	}
+
+	com.Object = strings.ToLower(slices[0])
+	com.Action = strings.ToLower(slices[1])
 
 	return
 }
