@@ -34,12 +34,18 @@ func (res *Response) SendJson(object interface{}) (err error) {
 
 	bytes, err = json.Marshal(object)
 
-	err = res.send(bytes)
+	err = res.Send(bytes)
 
 	return
 }
 
-func (res *Response) send(bytes []byte) (err error) {
+func (res *Response) Finish() (err error) {
+	err = res.Send([]byte{})
+
+	return
+}
+
+func (res *Response) Send(bytes []byte) (err error) {
 	_, err = res.conn.Write(append(bytes, '\n'))
 
 	return
