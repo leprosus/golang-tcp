@@ -2,9 +2,9 @@ package tcp
 
 import (
 	"encoding/json"
-	"strings"
 	"fmt"
 	"strconv"
+	"strings"
 )
 
 type Versioner interface {

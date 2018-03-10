@@ -2,8 +2,8 @@ package tcp
 
 import (
 	"bufio"
-	"net"
 	"encoding/json"
+	"net"
 )
 
 func (tcp *TCP) Send(bytes []byte) (result []byte, err error) {

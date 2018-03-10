@@ -1,10 +1,10 @@
 package tcp
 
 import (
-	"time"
-	"sync"
-	"net"
 	"fmt"
+	"net"
+	"sync"
+	"time"
 )
 
 const (

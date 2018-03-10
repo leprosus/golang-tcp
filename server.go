@@ -1,10 +1,10 @@
 package tcp
 
 import (
-	"net"
-	"fmt"
-	"time"
 	"bufio"
+	"fmt"
+	"net"
+	"time"
 )
 
 func (tcp *TCP) Handle(handler func(req *Request, res *Response)) (err error) {
