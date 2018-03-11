@@ -85,3 +85,19 @@ func (req *Request) Read(structure interface{}) (err error) {
 func (req *Request) String() string {
 	return string(req.body)
 }
+
+func (req *Request) Route() (route string, err error) {
+	ver, err := req.Version()
+	if err != nil {
+		return
+	}
+
+	com, err := req.Command()
+	if err != nil {
+		return
+	}
+
+	route = ver.String() + "/" + com.String()
+
+	return
+}
